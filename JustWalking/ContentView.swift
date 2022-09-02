@@ -10,19 +10,23 @@ import CoreMotion
 
 struct ContentView: View {
     
+    @AppStorage("stepCount", store: UserDefaults(suiteName: "group.com.ryan.justwalking.JustWalking")) var stepCount: Int = 0
     private let pedometer: CMPedometer = CMPedometer()
     @State private var steps: Int?
     @State private var distance: Double?
     
     var body: some View {
         VStack {
-            Text(steps != nil ? "\(steps!) steps" : "")
-            Text(distance != nil ? String(format: "%.2f miles", distance!): "")
+            Text(steps != nil ? "\(steps!) steps" : "").padding()
+            Text(distance != nil ? String(format: "%.2f miles", distance!): "").padding()
+            
+            Button("Uodate Steps") {
+                stepCount = Int.random(in: 5000...9999)
+            }
                 .onAppear {
                     initializePedometer()
                 }
         }
-        .padding()
     }
     
     private func initializePedometer() {
@@ -41,6 +45,7 @@ struct ContentView: View {
     }
         
     private func updateUI(data: CMPedometerData) {
+        stepCount = data.numberOfSteps.intValue
         steps = data.numberOfSteps.intValue
         
         guard let pedometerDistance = data.distance else { return }
